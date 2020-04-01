@@ -34,6 +34,16 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+/* --------------------------------- DEMO ------------------------------------*/
+
+#define COUNT_DEMO
+//#define SHIFT_DEMO
+
+#define DELAY		100
+
+/* ---------------------------------------------------------------------------*/
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,8 +73,7 @@ static void MX_GPIO_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
-{
+int main(void){
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -89,27 +98,76 @@ int main(void)
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
+  GPIOA->ODR = 0;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//  char anim[4] = "1/-\\";
-//  uint8_t frame = 0;
-//  uint8_t proc = 0;
-//  uint16_t count = 0;
-//  char sProc[9];
+#if defined(COUNT_DEMO)
+  char anim[4] = "1/-\\";
+  uint8_t frame = 0;
+  uint16_t count = 0;
+  char sProc[9];
+#elif defined(SHIFT_DEMO)
+  uint8_t seg = 3;
+  uint8_t disp = 1;
+//  uint8_t dir = 0;
+#endif
+
   while(1){
-//	  sprintf(sProc, "%4d%3d%c", count, proc++, anim[frame++]);
-//	  prints(sProc);
-//
-//	  if(frame > 3) frame = 0;
-//	  if(proc > 100){
-//		  proc = 0;
-//		  if(count > 9999) count = 0;
-//		  else count++;
+#if defined(COUNT_DEMO)
+	  sprintf(sProc, "%7d%c", count++, anim[frame++]);
+	  prints(sProc);
+
+	  if(frame > 3) frame = 0;
+
+	  HAL_Delay(DELAY);
+#elif defined(SHIFT_DEMO)
+	  clear();
+	  mprints(seg, disp, "()");
+
+//	  if(dir == 0){ // 0 - right 1 - left
+//		  if(seg == 0){
+//			  seg = 3;
+//			  if(disp < DISP_NUM){
+//				  disp++;
+//			  }else if(disp == DISP_NUM){
+//				  dir = 1;
+//		  	  }else{
+//				  disp = 1;
+//			  }
+//		  }else{
+//			  seg--;
+//		  }
+//	  }else{
+//		  if(seg == 3){
+//			  if(disp == 1){
+//				  dir = 0;
+//			  }else{
+//				  seg = 0;
+//			  }
+//			  if(disp > 1){
+//				  disp--;
+//			  }
+//		  }else{
+//			  seg++;
+//		  }
 //	  }
-//
-//	  HAL_Delay(100);
+
+	  if(seg == 0){
+		  seg = 3;
+		  if(disp < DISP_NUM){
+			  disp++;
+		  }else{
+			  disp = 1;
+		  }
+	  }else{
+		  seg--;
+	  }
+
+	  HAL_Delay(DELAY);
+#endif
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
