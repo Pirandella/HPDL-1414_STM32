@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <stdlib.h>
 #include "../HPDL/HPDL.h"
 /* USER CODE END Includes */
 
@@ -37,10 +38,11 @@
 
 /* --------------------------------- DEMO ------------------------------------*/
 
-#define COUNT_DEMO
-//#define SHIFT_DEMO
+//#define COUNT_DEMO
+//#define SCAN_DEMO
+#define TIMER_DEMO
 
-#define DELAY		100
+#define DELAY		1000
 
 /* ---------------------------------------------------------------------------*/
 
@@ -98,7 +100,8 @@ int main(void){
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
-  GPIOA->ODR = 0;
+  hpdl_init();
+  hpdl_clear();
 
   /* USER CODE END 2 */
 
@@ -109,62 +112,48 @@ int main(void){
   uint8_t frame = 0;
   uint16_t count = 0;
   char sProc[9];
-#elif defined(SHIFT_DEMO)
-  uint8_t seg = 3;
-  uint8_t disp = 1;
-//  uint8_t dir = 0;
+#elif defined(SCAN_DEMO)
+  uint8_t pos = 0;
+  uint8_t dir = 0;
+#elif defined(TIMER_DEMO)
+  uint32_t tick = 0;
+  uint8_t hours = 0;
+  uint8_t minutes = 0;
+  uint8_t seconds = 0;
+  uint8_t col = 0;
+  char str[9];
 #endif
 
   while(1){
 #if defined(COUNT_DEMO)
-	  sprintf(sProc, "%7d%c", count++, anim[frame++]);
-	  prints(sProc);
+	  itoa(count++, sProc, 10);
+	  hpdl_prints(0, sProc);
+	  hpdl_printc(7, anim[frame++]);
 
 	  if(frame > 3) frame = 0;
 
 	  HAL_Delay(DELAY);
-#elif defined(SHIFT_DEMO)
-	  clear();
-	  mprints(seg, disp, "()");
+#elif defined(SCAN_DEMO)
+	  hpdl_clear();
+	  hpdl_prints(pos, "()");
 
-//	  if(dir == 0){ // 0 - right 1 - left
-//		  if(seg == 0){
-//			  seg = 3;
-//			  if(disp < DISP_NUM){
-//				  disp++;
-//			  }else if(disp == DISP_NUM){
-//				  dir = 1;
-//		  	  }else{
-//				  disp = 1;
-//			  }
-//		  }else{
-//			  seg--;
-//		  }
-//	  }else{
-//		  if(seg == 3){
-//			  if(disp == 1){
-//				  dir = 0;
-//			  }else{
-//				  seg = 0;
-//			  }
-//			  if(disp > 1){
-//				  disp--;
-//			  }
-//		  }else{
-//			  seg++;
-//		  }
-//	  }
+	  if((pos == (4 * DISP_NUM - 2)) || (!pos && dir)) dir ^= 1;
+	  if(dir) pos--;
+	  else pos++;
 
-	  if(seg == 0){
-		  seg = 3;
-		  if(disp < DISP_NUM){
-			  disp++;
-		  }else{
-			  disp = 1;
-		  }
-	  }else{
-		  seg--;
+	  HAL_Delay(DELAY);
+#elif defined(TIMER_DEMO)
+	  sprintf(str, "%02d%c%02d%c%02d", hours, (col ? ':' : ' '), minutes, (col ? ':' : ' '), seconds);
+	  hpdl_prints(0, str);
+
+	  if(tick < 86400){
+		  tick++;
+		  col ^= 1;
 	  }
+
+	  hours = tick / 3600;
+	  minutes = (tick - (3600 * hours)) / 60;
+	  seconds = (tick - (3600 * hours) - (minutes * 60));
 
 	  HAL_Delay(DELAY);
 #endif

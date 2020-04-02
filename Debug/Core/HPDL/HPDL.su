@@ -1,5 +1,4 @@
-HPDL.c:3:6:printc	16	static
-HPDL.c:20:6:mprintc	16	static
-HPDL.c:37:6:prints	24	static
-HPDL.c:49:6:mprints	24	static
-HPDL.c:63:6:clear	16	static
+HPDL.c:6:6:hpdl_init	16	static
+HPDL.c:13:6:hpdl_printc	24	static
+HPDL.c:21:6:hpdl_prints	16	static
+HPDL.c:26:6:hpdl_clear	16	static
